@@ -4,6 +4,7 @@ from typing import (
 
 from eth_utils import (
     ValidationError,
+    big_endian_to_int,
     encode_hex,
     is_bytes,
     is_integer,
@@ -79,6 +80,10 @@ def validate_compressed_public_key_bytes(value: Any) -> None:
 def validate_private_key_bytes(value: Any) -> None:
     validate_bytes(value)
     validate_bytes_length(value, 32, "private key")
+    # A valid secp256k1 private key is an integer in [1, N - 1].
+    key_as_integer = big_endian_to_int(value)
+    validate_gte(key_as_integer, 1)
+    validate_lt_secpk1n(key_as_integer)
 
 
 def validate_recoverable_signature_bytes(value: Any) -> None:
