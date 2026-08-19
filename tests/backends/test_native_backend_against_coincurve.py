@@ -1,5 +1,4 @@
 import pytest
-
 from eth_utils import (
     int_to_big_endian,
     keccak,
@@ -8,6 +7,8 @@ from hypothesis import (
     example,
     given,
     settings,
+)
+from hypothesis import (
     strategies as st,
 )
 from strategies import (

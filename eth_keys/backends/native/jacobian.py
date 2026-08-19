@@ -1,7 +1,13 @@
 from eth_keys.constants import (
     IDENTITY_POINTS,
+)
+from eth_keys.constants import (
     SECPK1_A as A,
+)
+from eth_keys.constants import (
     SECPK1_N as N,
+)
+from eth_keys.constants import (
     SECPK1_P as P,
 )
 

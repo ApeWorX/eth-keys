@@ -1,7 +1,7 @@
+import operator
 from importlib import (
     import_module,
 )
-import operator
 from typing import (
     Any,
 )
@@ -15,17 +15,17 @@ def import_string(dotted_path: str) -> Any:
     """
     try:
         module_path, class_name = dotted_path.rsplit(".", 1)
-    except ValueError:
+    except ValueError as err:
         msg = f"{dotted_path} doesn't look like a module path"
-        raise ImportError(msg)
+        raise ImportError(msg) from err
 
     module = import_module(module_path)
 
     try:
         return getattr(module, class_name)
-    except AttributeError:
+    except AttributeError as err:
         msg = f'Module "{module_path}" does not define a "{class_name}" attribute/class'
-        raise ImportError(msg)
+        raise ImportError(msg) from err
 
 
 def split_at_longest_importable_path(dotted_path: str) -> tuple[str, str]:
@@ -43,10 +43,10 @@ def split_at_longest_importable_path(dotted_path: str) -> tuple[str, str]:
 
         try:
             operator.attrgetter(remainder)(module)
-        except AttributeError:
+        except AttributeError as err:
             raise ImportError(
                 f"Unable to derive appropriate import path for {dotted_path}"
-            )
+            ) from err
         else:
             return import_part, remainder
     else:

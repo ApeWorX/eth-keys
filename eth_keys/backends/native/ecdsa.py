@@ -1,11 +1,12 @@
 """
 Functions lifted from https://github.com/vbuterin/pybitcointools
 """
+
+import hashlib
+import hmac
 from collections.abc import (
     Callable,
 )
-import hashlib
-import hmac
 from typing import (
     Any,
 )
@@ -17,11 +18,23 @@ from eth_utils import (
 
 from eth_keys.constants import (
     SECPK1_A as A,
+)
+from eth_keys.constants import (
     SECPK1_B as B,
+)
+from eth_keys.constants import (
     SECPK1_G as G,
+)
+from eth_keys.constants import (
     SECPK1_N as N,
+)
+from eth_keys.constants import (
     SECPK1_P as P,
+)
+from eth_keys.constants import (
     SECPK1_Gx as Gx,
+)
+from eth_keys.constants import (
     SECPK1_Gy as Gy,
 )
 from eth_keys.exceptions import (
