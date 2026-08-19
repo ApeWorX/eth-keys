@@ -1,14 +1,17 @@
-import pytest
-
 import asn1tools
+import pytest
 from hypothesis import (
     example,
     given,
     settings,
+)
+from hypothesis import (
     strategies as st,
 )
 from pyasn1.codec.der import (
     decoder as pyasn1_decoder,
+)
+from pyasn1.codec.der import (
     encoder as pyasn1_encoder,
 )
 from pyasn1.type import (

@@ -4,6 +4,8 @@ from importlib.metadata import (
 
 from .main import (
     KeyAPI,
+)
+from .main import (
     lazy_key_api as keys,
 )
 

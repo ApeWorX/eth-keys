@@ -7,36 +7,12 @@ repos:
     -   id: check-toml
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
--   repo: https://github.com/asottile/pyupgrade
-    rev: v3.21.2
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.12.0
     hooks:
-    -   id: pyupgrade
-        args: [--py310-plus]
--   repo: https://github.com/psf/black
-    rev: 23.9.1
-    hooks:
-    -   id: black
--   repo: https://github.com/PyCQA/flake8
-    rev: 6.1.0
-    hooks:
-    -   id: flake8
-        additional_dependencies:
-        -   flake8-bugbear==23.9.16
-        exclude: setup.py
--   repo: https://github.com/PyCQA/autoflake
-    rev: v2.2.1
-    hooks:
-    -   id: autoflake
--   repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-    -   id: isort
--   repo: https://github.com/pycqa/pydocstyle
-    rev: 6.3.0
-    hooks:
-    -   id: pydocstyle
-        additional_dependencies:
-        -   tomli  # required until >= python311
+    -   id: ruff
+        args: [--fix]
+    -   id: ruff-format
 -   repo: https://github.com/executablebooks/mdformat
     rev: 0.7.17
     hooks:
@@ -47,7 +23,7 @@ repos:
     hooks:
     -   id: mypy-local
         name: run mypy with all dev dependencies present
-        entry: python -m mypy -p eth_keys
+        entry: uv run --extra coincurve --group lint --group test mypy eth_keys
         language: system
         always_run: true
         pass_filenames: false
@@ -55,4 +31,4 @@ repos:
     rev: v0.2.5
     hooks:
     -   id: blocklint
-        exclude: 'docs/Makefile|CHANGELOG.rst|tox.ini'
+        exclude: 'docs/Makefile|CHANGELOG.rst'

@@ -40,11 +40,11 @@ class CoinCurveECCBackend(BaseECCBackend):
     def __init__(self) -> None:
         try:
             import coincurve
-        except ImportError:
+        except ImportError as err:
             raise ImportError(
                 "The CoinCurveECCBackend requires the coincurve "
                 "library which is not available for import."
-            )
+            ) from err
         self.keys = coincurve.keys
         self.ecdsa = coincurve.ecdsa
         super().__init__()
@@ -95,14 +95,16 @@ class CoinCurveECCBackend(BaseECCBackend):
                 hasher=None,
             ).format(compressed=False)[1:]
         except Exception as err:
-            raise BadSignature(str(err))
+            raise BadSignature(str(err)) from err
         public_key = PublicKey(public_key_bytes, backend=self)
         return public_key
 
     def private_key_to_public_key(self, private_key: PrivateKey) -> PublicKey:
         public_key_bytes = self.keys.PrivateKey(
             private_key.to_bytes()
-        ).public_key.format(compressed=False,)[1:]
+        ).public_key.format(
+            compressed=False,
+        )[1:]
         return PublicKey(public_key_bytes, backend=self)
 
     def decompress_public_key_bytes(self, compressed_public_key_bytes: bytes) -> bytes:

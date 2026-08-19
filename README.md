@@ -1,15 +1,15 @@
 # eth-keys
 
 [![Join the conversation on Discord](https://img.shields.io/discord/809793915578089484?color=blue&label=chat&logo=discord&logoColor=white)](https://discord.gg/GHryRvPB84)
-[![Build Status](https://circleci.com/gh/ethereum/eth-keys.svg?style=shield)](https://circleci.com/gh/ethereum/eth-keys)
+[![Build Status](https://github.com/ApeWorX/eth-keys/actions/workflows/test.yaml/badge.svg)](https://github.com/ApeWorX/eth-keys/actions/workflows/test.yaml)
 [![PyPI version](https://badge.fury.io/py/eth-keys.svg)](https://badge.fury.io/py/eth-keys)
 [![Python versions](https://img.shields.io/pypi/pyversions/eth-keys.svg)](https://pypi.python.org/pypi/eth-keys)
 
 Common API for Ethereum key operations
 
-> This library and repository was previously located at https://github.com/pipermerriam/ethereum-keys.  It was transferred to the Ethereum foundation github in November 2017 and renamed to `eth-keys`.  The PyPi package was also renamed from `ethereum-keys` to `eth-keys`.
+> This library and repository was previously located at https://github.com/pipermerriam/ethereum-keys. It was transferred to the Ethereum foundation github in November 2017 and renamed to `eth-keys`. The PyPi package was also renamed from `ethereum-keys` to `eth-keys`.
 
-Read more in the documentation below. [View the change log](https://github.com/ethereum/eth-keys/blob/main/CHANGELOG.rst).
+Read more in the documentation below. [View the change log](https://github.com/ApeWorX/eth-keys/blob/main/CHANGELOG.rst).
 
 ## Installation
 
@@ -40,9 +40,9 @@ True
 ### `KeyAPI(backend=None)`
 
 The `KeyAPI` object is the primary API for interacting with the `eth-keys`
-libary.  The object takes a single optional argument in its constructor which
+libary. The object takes a single optional argument in its constructor which
 designates what backend will be used for eliptical curve cryptography
-operations.  The built-in backends are:
+operations. The built-in backends are:
 
 - `eth_keys.backends.NativeECCBackend`: A pure python implementation of the ECC operations.
 - `eth_keys.backends.CoinCurveECCBackend`: Uses the [`coincurve`](https://github.com/ofek/coincurve) library for ECC operations.
@@ -215,7 +215,7 @@ The `Signature` class can be instantiated in one of two ways.
 - `signature_bytes`: a bytes string with length 65.
 - `vrs`: a 3-tuple composed of the integers `v`, `r`, and `s`.
 
-> Note: If using the `signature_bytes` to instantiate, the byte string should be encoded as `r_bytes | s_bytes | v_bytes` where `|` represents concatenation.  `r_bytes` and `s_bytes` should be 32 bytes in length.  `v_bytes` should be a single byte `\x00` or `\x01`.
+> Note: If using the `signature_bytes` to instantiate, the byte string should be encoded as `r_bytes | s_bytes | v_bytes` where `|` represents concatenation. `r_bytes` and `s_bytes` should be 32 bytes in length. `v_bytes` should be a single byte `\x00` or `\x01`.
 
 Signatures are expected to use `1` or `0` for their `v` value.
 
@@ -284,9 +284,9 @@ for information on how we do:
 - Pull Requests
 - Documentation
 
-We use [pre-commit](https://pre-commit.com/) to maintain consistent code style. Once
+We use [prek](https://prek.j178.dev) to maintain consistent code style. Once
 installed, it will run automatically with every commit. You can also run it manually
-with `make lint`. If you need to make a commit that skips the `pre-commit` checks, you
+with `make lint`. If you need to make a commit that skips the `prek` checks, you
 can do so with `git commit --no-verify`.
 
 ### Development Environment Setup
@@ -296,10 +296,8 @@ You can set up your dev environment with:
 ```sh
 git clone git@github.com:ethereum/eth-keys.git
 cd eth-keys
-virtualenv -p python3 venv
-. venv/bin/activate
-python -m pip install -e ".[dev]"
-pre-commit install
+uv sync
+uv run prek install
 ```
 
 ### Release setup

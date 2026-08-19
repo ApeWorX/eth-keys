@@ -1,6 +1,6 @@
-import pytest
 import os
 
+import pytest
 from eth_utils import (
     keccak,
 )

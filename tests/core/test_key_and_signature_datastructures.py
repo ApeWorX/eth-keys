@@ -1,5 +1,4 @@
 import pytest
-
 from eth_utils import (
     ValidationError,
     decode_hex,
