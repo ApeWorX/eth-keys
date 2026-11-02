@@ -100,8 +100,13 @@ def decompress_public_key(compressed_public_key_bytes: bytes) -> bytes:
         raise ValueError("Invalid compressed public key")
 
     x = big_endian_to_int(compressed_public_key_bytes[1:])
+    if x >= P:
+        raise ValueError("Invalid compressed public key: x is not a field element")
+
     y_squared = (x**3 + A * x + B) % P
     y_abs = pow(y_squared, ((P + 1) // 4), P)
+    if pow(y_abs, 2, P) != y_squared:
+        raise ValueError("Invalid compressed public key: point is not on the curve")
 
     if (prefix == 2 and y_abs & 1 == 1) or (prefix == 3 and y_abs & 1 == 0):
         y = (-y_abs) % P
