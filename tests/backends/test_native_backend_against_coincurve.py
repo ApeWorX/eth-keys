@@ -26,6 +26,7 @@ from eth_keys.backends import (
 )
 from eth_keys.constants import (
     SECPK1_N,
+    SECPK1_P,
 )
 from eth_keys.exceptions import (
     BadSignature,
@@ -199,10 +200,67 @@ def test_public_key_decompression_is_equal(
     compressed_public_key = public_key_template.to_compressed_bytes()
 
     native_public_key = native_key_api.PublicKey.from_compressed_bytes(
-        compressed_public_key
+        compressed_public_key, backend=native_key_api.backend
     )
     coincurve_public_key = coincurve_key_api.PublicKey.from_compressed_bytes(
-        compressed_public_key
+        compressed_public_key, backend=coincurve_key_api.backend
     )
 
     assert native_public_key == coincurve_public_key
+
+
+@pytest.mark.parametrize("prefix", (b"\x02", b"\x03"))
+@pytest.mark.parametrize(
+    "x",
+    (
+        # x**3 + 7 is not a quadratic residue mod p, so no point has this x
+        5,
+        7,
+        9,
+        10,
+        11,
+        # x is not a field element (x >= p)
+        SECPK1_P,
+        SECPK1_P + 1,
+        2**256 - 1,
+    ),
+)
+def test_public_key_decompression_rejects_invalid_points(
+    prefix, x, native_key_api, coincurve_key_api
+):
+    compressed_public_key = prefix + x.to_bytes(32, "big")
+
+    with pytest.raises(ValueError):
+        coincurve_key_api.PublicKey.from_compressed_bytes(
+            compressed_public_key, backend=coincurve_key_api.backend
+        )
+    with pytest.raises(ValueError):
+        native_key_api.PublicKey.from_compressed_bytes(
+            compressed_public_key, backend=native_key_api.backend
+        )
+
+
+@given(
+    prefix=st.sampled_from((b"\x02", b"\x03")),
+    x_bytes=st.binary(min_size=32, max_size=32),
+)
+@settings(max_examples=MAX_EXAMPLES)
+def test_public_key_decompression_of_arbitrary_bytes_is_equal(
+    prefix, x_bytes, native_key_api, coincurve_key_api
+):
+    compressed_public_key = prefix + x_bytes
+
+    try:
+        coincurve_public_key = coincurve_key_api.PublicKey.from_compressed_bytes(
+            compressed_public_key, backend=coincurve_key_api.backend
+        )
+    except ValueError:
+        with pytest.raises(ValueError):
+            native_key_api.PublicKey.from_compressed_bytes(
+                compressed_public_key, backend=native_key_api.backend
+            )
+    else:
+        native_public_key = native_key_api.PublicKey.from_compressed_bytes(
+            compressed_public_key, backend=native_key_api.backend
+        )
+        assert native_public_key == coincurve_public_key
