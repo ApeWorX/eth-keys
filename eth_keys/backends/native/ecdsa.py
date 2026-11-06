@@ -44,6 +44,9 @@ from eth_keys.utils.padding import (
     pad32,
 )
 
+from ._public import (
+    _joint_multiply,
+)
 from .jacobian import (
     fast_add,
     fast_multiply,
@@ -158,10 +161,20 @@ def ecdsa_raw_verify(
     z = big_endian_to_int(msg_hash)
 
     u1, u2 = z * w % N, r * w % N
-    x, y = fast_add(
-        fast_multiply(G, u1),
-        fast_multiply(raw_public_key, u2),
-    )
+    px, py = raw_public_key
+    if (
+        type(r) is int
+        and type(s) is int
+        and 0 <= px < P
+        and 0 < py < P
+        and (py * py - px * px * px - B) % P == 0
+    ):
+        x, y = from_jacobian(_joint_multiply(u1, raw_public_key, u2))
+    else:
+        x, y = fast_add(
+            fast_multiply(G, u1),
+            fast_multiply(raw_public_key, u2),
+        )
     return bool(r == x and (r % N) and (s % N))
 
 
@@ -182,10 +195,14 @@ def ecdsa_raw_recover(msg_hash: bytes, vrs: tuple[int, int, int]) -> bytes:
     if (xcubedaxb - y * y) % P != 0 or not (r % N) or not (s % N):
         raise BadSignature("Invalid signature")
     z = big_endian_to_int(msg_hash)
-    Gz = jacobian_multiply((Gx, Gy, 1), (N - z) % N)
-    XY = jacobian_multiply((x, y, 1), s)
-    Qr = jacobian_add(Gz, XY)
-    Q = jacobian_multiply(Qr, inv(r, N))
+    if type(r) is int and type(s) is int and 0 < r < N and 0 < s < N:
+        inverse_r = inv(r, N)
+        Q = _joint_multiply((N - z) * inverse_r % N, (x, y), s * inverse_r % N)
+    else:
+        Gz = jacobian_multiply((Gx, Gy, 1), (N - z) % N)
+        XY = jacobian_multiply((x, y, 1), s)
+        Qr = jacobian_add(Gz, XY)
+        Q = jacobian_multiply(Qr, inv(r, N))
 
     if is_identity(Q):
         raise BadSignature("InvalidSignature")
