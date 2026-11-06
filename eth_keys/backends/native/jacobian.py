@@ -15,6 +15,10 @@ from eth_keys.constants import (
 def inv(a: int, n: int) -> int:
     if a == 0:
         return 0
+    # The general helper historically also accepts noninvertible moduli and
+    # subclasses. Keep its original algorithm for those argument forms.
+    if type(a) is int and type(n) is int and n in (P, N) and a % n:
+        return pow(a, -1, n)
     lm, hm = 1, 0
     low, high = a % n, n
     while low > 1:
